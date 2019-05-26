@@ -12,8 +12,8 @@ namespace FN.Store.Domain.Contracts.Repositories
         void Add(TEntity entity);
         void Update(TEntity entity);
         void Delete(TEntity entity);
-        Task<List<TEntity>> GetAsync();
-        Task<TEntity> Get(object id);
+        Task<List<TEntity>> GetAllAsync();
+        Task<TEntity> GetAsync(object id);
 
     }
 }

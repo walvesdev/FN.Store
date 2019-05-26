@@ -14,10 +14,12 @@ namespace FN.Store.Api.Controllers
     public class ProdutosController : ControllerBase
     {
         private readonly IProdutoRepository _produtoRepository;
+        private readonly ICategoriaRepository _categoriaRepository;
 
-        public ProdutosController(ProdutoRepositoryEF produtoRepository)
+        public ProdutosController(ProdutoRepositoryEF produtoRepository, ICategoriaRepository categoriaRepository)
         {
             _produtoRepository = produtoRepository;
+            _categoriaRepository = categoriaRepository;
         }
 
         [HttpGet]
@@ -29,7 +31,7 @@ namespace FN.Store.Api.Controllers
             
             return  Ok(dados);
         }
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetProdutoById")]
         public async Task<IActionResult> GetById(int id)
         {
             var produto = await _produtoRepository.GetByIdWithCategoryAsync(id);
@@ -37,6 +39,22 @@ namespace FN.Store.Api.Controllers
             if(produto == null)  return NotFound();
 
             return Ok(produto?.ParaProdutosGet());
+        }
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody]ProdutoAddEdit model)
+        {
+            var categoria = await _categoriaRepository.GetAsync(model.CategoriaId);
+            if (categoria == null) ModelState.AddModelError("CategoriaId", "Categoria não existe!");
+
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var data =  model.ParaProduto();
+            _produtoRepository.Add(data);
+
+            var produto = data.ParaProdutosGet();
+            produto.CategoriaNome = categoria.Nome;
+
+            return CreatedAtRoute("GetProdutoById", new { produto.Id }, produto); 
         }
     }
 }

@@ -20,5 +20,15 @@ namespace FN.Store.Api.Models
                 CategoriaNome = entity.Categoria?.Nome
             };
         }
+
+        public static Produto ParaProduto(this ProdutoAddEdit model)
+        {
+            return new Produto
+            {
+                Nome = model.Nome,
+                Preco = model.Preco,
+                CategoriaId = model.CategoriaId
+            };
+        }
     }
 }
