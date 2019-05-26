@@ -14,5 +14,11 @@ namespace FN.Store.Domain.Entities
         public int CategoriaId { get; set; }
         public Categoria Categoria { get; set; }
 
+        public void UpdateProduto(string nome, decimal preco, int categoriaId)
+        {
+            Nome = nome;
+            Preco = preco;
+            CategoriaId = categoriaId;
+        }
     }
 }
