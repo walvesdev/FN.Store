@@ -1,9 +1,11 @@
 ﻿using FN.Store.Data.EF;
 using FN.Store.Data.EF.Repositories;
 using FN.Store.Domain.Contracts.Repositories;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,11 +18,12 @@ namespace FN.Store.DI
         {
             //por requisição
             services.AddScoped<StoreDataContext>();
+       
             //por chamada
-            services.AddTransient<IProdutoRepository, ProdutoRepositoryEF>();
-            services.AddTransient<ICategoriaRepository, CategoriaRepositoryEF>();
+            //services.AddTransient<IProdutoRepository, ProdutoRepositoryADO>();
+            services.AddTransient<ICategoriaRepository, CategoriaRepositoryADO>();
             services.AddTransient<DbInitializer>(); 
-            services.AddTransient<ProdutoRepositoryEF>();
+            services.AddTransient<ProdutoRepositoryADO>();
 
         }
     }

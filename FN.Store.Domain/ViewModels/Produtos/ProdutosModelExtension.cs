@@ -1,17 +1,13 @@
-﻿using FN.Store.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using FN.Store.Domain.Entities;
 
-namespace FN.Store.Api.Models
+namespace FN.Store.Domain.ViewModels.Produtos
 {
     public static class ProdutosModelExtension
     {
-        public static ProdutosGet ParaProdutosGet(this Produto entity)
+        public static ProdutoModel ParaProdutosGet(this Produto entity)
         {
-            return new ProdutosGet
+            return new ProdutoModel
             {
                 Id = entity.Id,
                 Nome = entity.Nome,

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FN.Store.Api.Models
+namespace FN.Store.Domain.ViewModels.Produtos
 {
     public class ProdutoAddEdit
     {

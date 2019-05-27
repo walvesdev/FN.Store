@@ -1,11 +1,7 @@
-﻿using FN.Store.Api.Models;
-using FN.Store.Data.EF.Repositories;
+﻿using FN.Store.Data.EF.Repositories;
 using FN.Store.Domain.Contracts.Repositories;
+using FN.Store.Domain.ViewModels.Produtos;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FN.Store.Api.Controllers
@@ -13,10 +9,10 @@ namespace FN.Store.Api.Controllers
     [Route("api/v1/[controller]")]
     public class ProdutosController : ControllerBase
     {
-        private readonly IProdutoRepository _produtoRepository;
+        private readonly ProdutoRepositoryADO _produtoRepository;
         private readonly ICategoriaRepository _categoriaRepository;
 
-        public ProdutosController(ProdutoRepositoryEF produtoRepository, ICategoriaRepository categoriaRepository)
+        public ProdutosController(ProdutoRepositoryADO produtoRepository, ICategoriaRepository categoriaRepository)
         {
             _produtoRepository = produtoRepository;
             _categoriaRepository = categoriaRepository;
@@ -25,20 +21,20 @@ namespace FN.Store.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var dados = (await _produtoRepository.GetAllWithCategoryAsync())
-                .Select(produto => produto.ParaProdutosGet());
+            var dados = await _produtoRepository.GetAllWithCategoryAsync();
+                //.Select(produto => produto.ParaProdutosGet());
 
 
             return Ok(dados);
         }
         [HttpGet("{id}", Name = "GetProdutoById")]
-        public async Task<IActionResult> GetById(int id)
+        public IActionResult GetById(int id)
         {
-            var produto = await _produtoRepository.GetByIdWithCategoryAsync(id);
+            var produto =  _produtoRepository.GetByIdWithCategoryAsync(id);
 
             if (produto == null) return NotFound();
 
-            return Ok(produto?.ParaProdutosGet());
+            return Ok(produto);
         }
         [HttpPost]
         public async Task<IActionResult> Add([FromBody]ProdutoAddEdit model)

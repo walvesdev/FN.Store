@@ -37,7 +37,7 @@ namespace FN.Store.Api
 
             app.UseMvc();
 
-            serviceProvider.GetService<DbInitializer>().PreencherBanco();
+            //serviceProvider.GetService<DbInitializer>().PreencherBanco();
         }
     }
 }
