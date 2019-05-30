@@ -1,7 +1,10 @@
 ﻿using FN.Store.Data.EF.Repositories;
 using FN.Store.Domain.Contracts.Repositories;
+using FN.Store.Domain.Entities;
 using FN.Store.Domain.ViewModels.Produtos;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FN.Store.Api.Controllers
@@ -10,36 +13,37 @@ namespace FN.Store.Api.Controllers
     public class ProdutosController : ControllerBase
     {
         private readonly ProdutoRepositoryADO _produtoRepository;
-        private readonly ICategoriaRepository _categoriaRepository;
+        private readonly CategoriaRepositoryADO _categoriaRepository;
 
-        public ProdutosController(ProdutoRepositoryADO produtoRepository, ICategoriaRepository categoriaRepository)
+        public ProdutosController(ProdutoRepositoryADO produtoRepository, CategoriaRepositoryADO categoriaRepository)
         {
             _produtoRepository = produtoRepository;
             _categoriaRepository = categoriaRepository;
         }
 
-        [HttpGet]
+        [HttpGet()]
         public async Task<IActionResult> GetAll()
         {
-            var dados = await _produtoRepository.GetAllWithCategoryAsync();
-                //.Select(produto => produto.ParaProdutosGet());
 
+            var dados = (await _produtoRepository.GetAllWithCategoryAsync()).Select(produto => produto.ParaProdutosModel());
+            
 
             return Ok(dados);
         }
         [HttpGet("{id}", Name = "GetProdutoById")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var produto =  _produtoRepository.GetByIdWithCategoryAsync(id);
+            var produtoModel = (await _produtoRepository.GetByIdWithCategoryAsync(id))
+                .Select(produto => produto.ParaProdutosModel());
 
-            if (produto == null) return NotFound();
+            if (produtoModel == null) return NotFound();
 
-            return Ok(produto);
+            return Ok(produtoModel);
         }
         [HttpPost]
         public async Task<IActionResult> Add([FromBody]ProdutoAddEdit model)
         {
-            var categoria = await _categoriaRepository.GetAsync(model.CategoriaId);
+            var categoria = await _categoriaRepository.GetIdNomeAsync(model.CategoriaId);
 
             if (categoria == null) ModelState.AddModelError("CategoriaId", "Categoria não existe!");
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -47,31 +51,29 @@ namespace FN.Store.Api.Controllers
             var data = model.ParaProduto();
             _produtoRepository.Add(data);
 
-            var produto = data.ParaProdutosGet();
+            var produto = data.ParaProdutosModel();
             produto.CategoriaNome = categoria.Nome;
 
             return CreatedAtRoute("GetProdutoById", new { produto.Id }, produto);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody]ProdutoAddEdit model)
+        public IActionResult Update(int id, [FromBody]Produto model)
         {
-            var categoria = await _categoriaRepository.GetAsync(model.CategoriaId);
-            if (categoria == null) ModelState.AddModelError("CategoriaId", "Categoria não existe!");
-            
-            var produto = await _produtoRepository.GetAsync(id);
+            var produto = _produtoRepository.GetByIdAsync(id);
 
-            if (produto == null) ModelState.AddModelError("Id","Produto não Cadastrado!");
+            if (produto == null) ModelState.AddModelError("Id", "Produto não Cadastrado!");
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            produto.UpdateProduto(model.Nome, model.Preco, model.CategoriaId);
-            _produtoRepository.Update(produto);
+            model.Id = id;
+
+            _produtoRepository.Update(model);
 
             return Ok();
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> GetByIdelete(int id)
         {
-            var produto = await _produtoRepository.GetAsync(id);
+            var produto = await _produtoRepository.GetByIdAsync(id);
 
             if (produto == null) return BadRequest(new { Produto = new string[] { "Produto não encontrado!" } });
             _produtoRepository.Delete(produto);

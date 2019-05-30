@@ -21,7 +21,7 @@ namespace FN.Store.DI
        
             //por chamada
             //services.AddTransient<IProdutoRepository, ProdutoRepositoryADO>();
-            services.AddTransient<ICategoriaRepository, CategoriaRepositoryADO>();
+            services.AddTransient<CategoriaRepositoryADO>();
             services.AddTransient<DbInitializer>(); 
             services.AddTransient<ProdutoRepositoryADO>();
 

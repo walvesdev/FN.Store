@@ -5,7 +5,7 @@ namespace FN.Store.Domain.ViewModels.Produtos
 {
     public static class ProdutosModelExtension
     {
-        public static ProdutoModel ParaProdutosGet(this Produto entity)
+        public static ProdutoModel ParaProdutosModel(this Produto entity)
         {
             return new ProdutoModel
             {
